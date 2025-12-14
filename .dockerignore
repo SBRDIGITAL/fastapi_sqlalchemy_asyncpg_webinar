@@ -1,0 +1,38 @@
+# VCS
+.git
+.gitignore
+
+# Python bytecode & caches
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+.ruff_cache/
+.mypy_cache/
+.pytest_cache/
+
+# Virtual envs
+.venv/
+venv/
+env/
+
+# Local tooling
+.vscode/
+.idea/
+.DS_Store
+
+# Tests & coverage artifacts
+tests/
+.coverage
+coverage.xml
+htmlcov/
+
+# Config/secrets (mounted via env vars in prod)
+# .env
+# .env.*
+
+# Logs & temp
+logs/
+*.log
+tmp/
