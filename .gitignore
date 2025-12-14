@@ -13,3 +13,6 @@ wheels/
 # Logs
 logs/
 *.log
+app_docker_logs/
+
+.pytest_cache/

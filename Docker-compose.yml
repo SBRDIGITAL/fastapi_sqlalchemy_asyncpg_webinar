@@ -1,0 +1,36 @@
+services:
+  fastapi_app:
+    # Сборка образа из Dockerfile в корне проекта
+    build:
+      context: .
+      dockerfile: Dockerfile
+    # Имя контейнера, по нему удобно смотреть логи/статус
+    container_name: fastapi_app
+    # Перезапускать контейнер, если он упал (кроме ручной остановки)
+    restart: unless-stopped
+    # Пробрасываем директорию для логов наружу, чтобы видеть их на хосте
+    volumes:
+      - ./app_docker_logs:/app/logs
+    # Подхватываем переменные окружения из файла .env в корне проекта
+    env_file:
+      - .env
+    environment:
+      # Дополняем/переопределяем переменные окружения (поверх .env)
+      # Переключаем прод-режим и отключаем болтливые SQL-логи
+      - ENV=production
+      - DB_ECHO=False
+      # Внутри контейнера localhost — это сам контейнер, поэтому указываем адрес БД
+      - POSTGRES_HOST=postgrocker_18
+      - POSTGRES_PORT=5432
+    # Подключаемся к внешней сети, где уже крутится контейнер с Postgres
+    networks:
+      - postgrocker_18_postgrocker_network
+    # Пробрасываем порт наружу только на localhost хоста, значение берём из .env (API_PORT)
+    ports:
+      - "127.0.0.1:${API_PORT}:8000"  # ограничиваем доступ хостом localhost, порт из .env
+
+
+networks:
+  postgrocker_18_postgrocker_network:
+    # Используем заранее созданную внешнюю сеть docker (создана вместе с Postgres)
+    external: true
