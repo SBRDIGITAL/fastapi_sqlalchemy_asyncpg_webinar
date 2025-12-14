@@ -1,0 +1,27 @@
+services:
+  fastapi_app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: fastapi_app
+    restart: unless-stopped
+    volumes:
+      - ./app_docker_logs:/app/logs
+    env_file:
+      - .env
+    environment:
+      # PROD env и отключаем лишние логи в контейнере
+      - ENV=production
+      - DB_ECHO=False
+      # В контейнере localhost указывает на сам контейнер, поэтому даем доступ к БД на хосте
+      - POSTGRES_HOST=postgrocker_18
+      - POSTGRES_PORT=5432
+    networks:
+      - postgrocker_18_postgrocker_network
+    ports:
+      - "127.0.0.1:${API_PORT}:8000"  # ограничиваем доступ хостом localhost, порт из .env
+
+
+networks:
+  postgrocker_18_postgrocker_network:
+    external: true

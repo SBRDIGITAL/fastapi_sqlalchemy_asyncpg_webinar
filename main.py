@@ -11,6 +11,7 @@ from app.modules.logging.app_logger import get_app_logger
 from app.config.constants import DEV_ENV, PROD_ENV
 
 from app.api.v1.routes.healthcheck import router as healthcheck_router
+from app.api.v1.routes.users import router as users_router
 
 
 
@@ -38,6 +39,7 @@ class FastAPIapp:
         self.app_routers: dict[str, list[APIRouter]] = {
             '/v1': [
                 healthcheck_router,
+                users_router,
                 # роутер_который_не_нужен_но_удалять_не_хочу просто закомментить
                 # другие роутеры..
             ]
