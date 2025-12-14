@@ -4,7 +4,7 @@ from typing import Union
 
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
+from fastapi import APIRouter, FastAPI
 
 from app.config.config_reader import env_config
 from app.modules.logging.app_logger import get_app_logger
@@ -35,7 +35,32 @@ class FastAPIapp:
         ## Инициализирует экземпляр класса.
         """
         self.app = self._create_app()
-        self.app.include_router(healthcheck_router)
+        self.app_routers: dict[str, list[APIRouter]] = {
+            '/v1': [
+                healthcheck_router,
+                # роутер_который_не_нужен_но_удалять_не_хочу просто закомментить
+                # другие роутеры..
+            ]
+        }
+        self.__post_init()
+    
+    def __post_init(self):
+        """ ## Выполняет пост-инициализацию после создания экземпляра класса. """
+        self._include_routers()
+
+    def _include_routers(self):
+        """
+        ## Регистрирует все роутеры в приложении `FastAPI`.
+
+        Проходит по словарю `app_routers` и включает каждый роутер
+            с соответствующим префиксом.
+
+        Raises:
+            ValueError: Если `self.app` не является экземпляром `FastAPI`.
+        """
+        for i in self.app_routers.items():
+            [self.app.include_router(r, prefix=i[0]) for r in i[-1]]
+
 
     @asynccontextmanager
     async def lifespan(self, app: FastAPI):
