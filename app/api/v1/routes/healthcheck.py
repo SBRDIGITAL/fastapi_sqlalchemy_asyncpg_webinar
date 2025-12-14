@@ -1,3 +1,5 @@
+"""Маршрут проверки доступности `API` версии v1."""
+
 from fastapi import APIRouter
 
 from app.api.v1.models.response.healthcheck import HealthCheckResponseModel
@@ -19,9 +21,13 @@ router = APIRouter(prefix='/healthcheck', tags=['healthcheck', 'v1'])
 @router.get(path='/', status_code=200, response_model=HealthCheckResponseModel)
 async def get_healthcheck():
     """
-    ## Ендпоинт проверки работоспособности `API`.
+    ## Эндпоинт проверки работоспособности `API`.
+
+    Возвращает статическое тело ответа, подтверждающее, что сервис успешно
+    поднят и готов обрабатывать запросы.
 
     ### Returns:
-        HealthCheckResponseModel: Модель для ответа от `'/v1/healthcheck'`
-    """    
+        HealthCheckResponseModel: Ответ `{'status': 'ok'}` с дополнительной
+        метаинформацией.
+    """
     return HealthCheckResponseModel()

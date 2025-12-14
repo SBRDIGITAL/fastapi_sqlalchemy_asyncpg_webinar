@@ -1,7 +1,6 @@
 # Плохо
 # from ..base import BaseResponseModel
 # Хорошо (Явное лучше неявного)
-from pydantic import Field
 from app.api.v1.models.base import BaseResponseModel
 
 

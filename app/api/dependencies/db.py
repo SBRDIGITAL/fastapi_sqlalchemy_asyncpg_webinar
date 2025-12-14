@@ -1,4 +1,4 @@
-"""Зависимости FastAPI для работы с базой данных.
+"""Зависимости для работы с базой данных.
 
 Предоставляет генератор асинхронных сессий `AsyncSession` через `Depends`.
 """
@@ -12,13 +12,12 @@ from app.database.connection import db_connection
 
 async def get_db_session() -> AsyncIterator[AsyncSession]:
     """
-    ## Генератор асинхронной сессии БД.
+    ## Зависимость: Получение сессии БД.
 
-    Использует контекстный менеджер `DbConnection.get_session` и отдаёт сессию
-    через `yield`, чтобы FastAPI корректно закрывал соединение после запроса.
+    Генератор асинхронной сессии SQLAlchemy для использования в эндпоинтах.
 
-    Yields:
-        AsyncSession: Активная асинхронная сессия SQLAlchemy.
+    ### Yields:
+        AsyncSession: Активная сессия для выполнения операций с БД.
     """
     async with db_connection.get_session() as session:
         yield session

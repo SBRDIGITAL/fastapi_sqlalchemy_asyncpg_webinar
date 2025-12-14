@@ -1,6 +1,7 @@
+"""Чтение и управление конфигурацией приложения."""
+
 from functools import lru_cache
 from pathlib import Path
-
 
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -10,10 +11,27 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 
+
 class Settings(BaseSettings):
     """
-    ## Читает переменные окружения из `.env` файла в кодировке `UTF-8`.
+    ## Конфигурация приложения.
+
+    Читает переменные окружения из `.env` файла и предоставляет доступ к настройкам.
+
+    ### Attributes:
+        api_host (str): Хост для `API`.
+        api_port (int): Порт для `API`.
+        db_name (str): Имя базы данных `PostgreSQL`.
+        db_user (str): Пользователь базы данных `PostgreSQL`.
+        db_password (str): Пароль для базы данных `PostgreSQL`.
+        db_host (str): Хост базы данных `PostgreSQL`.
+        db_port (int): Порт базы данных `PostgreSQL`.
+        db_echo (bool): Логирование `SQL`-запросов.
+        db_pool_size (int): Размер пула соединений.
+        db_max_overflow (int): Максимальное количество дополнительных соединений.
+        env (str): Текущая среда (`production`/`development`).
     """
+
     # FastAPI
     api_host: str = Field("localhost", validation_alias="API_HOST")
     api_port: int = Field(8000, validation_alias="API_PORT")
@@ -56,10 +74,12 @@ class Settings(BaseSettings):
 @lru_cache
 def get_settings() -> Settings:
     """
-    ## Возвращает кешированный экземпляр `Settings`.
+    ## Получение настроек.
 
-    lru_cache обеспечивает, что настройки будут прочитаны один раз при
-    первом вызове и потом переиспользоваться (удобно для FastAPI зависимостей).
+    Возвращает кэшированный экземпляр настроек приложения.
+
+    ### Returns:
+        Settings: Экземпляр настроек.
     """
     return Settings()
 

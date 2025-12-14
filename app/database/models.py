@@ -10,13 +10,12 @@
 
 Если требуется удалить связанные объекты — это должно быть реализовано явно в сервисном слое приложения.
 """
-from datetime import datetime, timezone
-import sqlalchemy
+
 from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy import (
     Boolean, Column, Index, Sequence, TIMESTAMP,  # служебные классы
-    BigInteger, String, Text, UniqueConstraint,  # типы данных
-    func, text, # Функции
+    BigInteger, String, Text,  # типы данных
+    func, # Функции
 )
 
 

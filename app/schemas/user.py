@@ -1,19 +1,19 @@
+"""Базовые Pydantic-схемы для пользователя."""
+
 from datetime import datetime
-from typing import Optional
 from pydantic import BaseModel, Field, EmailStr
 
 
 class NewUser(BaseModel):
     """
-    ## Модель нового пользователя
+    ## Модель создания пользователя.
 
-    Args:
-        BaseModel (pydantic.BaseModel): ...
-    
-    Attributes:
-        email (EmailStr): ...
-        full_name (str): ...
-        is_hidden (bool): ...
+    Используется для валидации входных данных при создании пользователя.
+
+    ### Attributes:
+        email (EmailStr): Электронная почта.
+        full_name (str): Полное имя пользователя.
+        is_hidden (bool): Флаг мягкого удаления (скрытия записи).
     """    
     email: EmailStr = Field(..., max_length=255, description='Электронная почта')
     full_name: str = Field(..., description='Полное имя пользователя')
@@ -25,10 +25,16 @@ class NewUser(BaseModel):
 
 class ExistsUser(NewUser):
     """
-    ## _summary_
+    ## Модель существующего пользователя.
 
-    Args:
-        NewUser (_type_): _description_
+    Наследует поля создания и добавляет идентификатор и время создания.
+
+    ### Inherits:
+        NewUser: Базовые поля пользователя.
+
+    ### Attributes:
+        id (int): Уникальный идентификатор в БД.
+        created_at (datetime): Время создания записи о пользователе.
     """    
     id: int = Field(..., description='Уникальный идентификатор пользователя в БД')
     created_at: datetime = Field(..., description='Дата и время создания записи о пользователе')

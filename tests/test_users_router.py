@@ -1,7 +1,4 @@
-"""Интеграционные тесты для роутера пользователей API v1.
-
-Используем FastAPI TestClient для синхронного тестирования с поддержкой lifespan.
-"""
+"""Интеграционные тесты маршрутов пользователей API v1 (FastAPI TestClient)."""
 from __future__ import annotations
 
 from uuid import uuid4
@@ -14,12 +11,13 @@ from main import app
 
 @pytest.fixture(scope="module")
 def client():
-    """Создает TestClient для тестирования FastAPI приложения с lifespan."""
+    """Создает `TestClient` c поддержкой lifespan для интеграционных тестов."""
     with TestClient(app) as test_client:
         yield test_client
 
 
 def _create_user_payload():
+    """Генерирует полезную нагрузку для создания пользователя."""
     return {
         "email": f"user_{uuid4()}@example.com",
         "full_name": "Test User",
@@ -28,6 +26,7 @@ def _create_user_payload():
 
 
 def test_create_user_and_get_by_id(client: TestClient):
+    """Создает пользователя и извлекает его по id."""
     payload = _create_user_payload()
 
     resp_create = client.post("/v1/users/", json=payload)
@@ -49,6 +48,7 @@ def test_create_user_and_get_by_id(client: TestClient):
 
 
 def test_get_all_contains_created_user(client: TestClient):
+    """Убеждаемся, что созданный пользователь присутствует в списке."""
     payload = _create_user_payload()
     resp_create = client.post("/v1/users/", json=payload)
     assert resp_create.status_code in (200, 201)
@@ -61,5 +61,6 @@ def test_get_all_contains_created_user(client: TestClient):
 
 
 def test_get_by_id_not_found(client: TestClient):
+    """Запрос несуществующего пользователя возвращает 404."""
     resp = client.get("/v1/users/999999999")
     assert resp.status_code == 404

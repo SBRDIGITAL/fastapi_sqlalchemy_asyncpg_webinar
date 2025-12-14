@@ -1,4 +1,4 @@
-"""Aiohttp-based client tests hitting the running FastAPI app like an external consumer."""
+"""Интеграционные тесты через aiohttp-клиент (эмуляция внешнего потребителя)."""
 from __future__ import annotations
 
 import os
@@ -10,6 +10,7 @@ import pytest_asyncio
 
 
 def _base_url() -> str:
+    """Возвращает базовый URL API из переменных окружения."""
     host = os.getenv("API_HOST", "127.0.0.1")
     port = os.getenv("API_PORT", "8000")
     return f"http://{host}:{port}"
@@ -17,11 +18,13 @@ def _base_url() -> str:
 
 @pytest_asyncio.fixture()
 async def client():
+    """Создает aiohttp ClientSession с базовым URL для тестов."""
     async with aiohttp.ClientSession(base_url=_base_url()) as session:
         yield session
 
 
 def _payload():
+    """Генерирует полезную нагрузку для создания пользователя."""
     return {
         "email": f"user_{uuid4()}@example.com",
         "full_name": "Test User",
@@ -31,6 +34,7 @@ def _payload():
 
 @pytest.mark.asyncio
 async def test_create_and_get_by_id(client: aiohttp.ClientSession):
+    """Создает пользователя и читает его по id через внешнего клиента."""
     payload = _payload()
     async with client.post("/v1/users/", json=payload) as resp:
         print("create status:", resp.status)
@@ -50,6 +54,7 @@ async def test_create_and_get_by_id(client: aiohttp.ClientSession):
 
 @pytest.mark.asyncio
 async def test_list_contains_created(client: aiohttp.ClientSession):
+    """Проверяет, что созданный пользователь появляется в списке."""
     payload = _payload()
     async with client.post("/v1/users/", json=payload) as resp:
         print("create status:", resp.status)
@@ -67,6 +72,7 @@ async def test_list_contains_created(client: aiohttp.ClientSession):
 
 @pytest.mark.asyncio
 async def test_get_not_found(client: aiohttp.ClientSession):
+    """Запрос несуществующего пользователя отдаёт 404."""
     async with client.get("/v1/users/999999999") as resp:
         print("not-found status:", resp.status)
         body = await resp.text()

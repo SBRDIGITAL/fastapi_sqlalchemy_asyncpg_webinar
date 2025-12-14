@@ -1,4 +1,4 @@
-
+"""Базовый слой доступа к данным (DAO)."""
 
 from typing import Any, Optional, Type, TypeVar, Iterable
 
@@ -20,11 +20,11 @@ TSchema = TypeVar('TSchema', bound=BaseModel)
 
 
 class BaseDAO:
-    """ 
+    """
     ## Базовый класс `Data Access Object`.
-    
-    Хранит ссылку на соединение с БД и предоставляет хелперы
-    для выполнения типичных запросов (`select`, преобразование в dict и т.д.).
+
+    Содержит общие хелперы для выполнения типовых операций чтения данных
+    и преобразования ORM-объектов в словари/Pydantic-схемы.
     """
     def __init__(self) -> None:
         """

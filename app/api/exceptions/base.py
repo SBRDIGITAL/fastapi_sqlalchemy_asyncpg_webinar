@@ -1,38 +1,48 @@
+"""Базовые исключения для API."""
+
 from fastapi import HTTPException
+
 from .statuses import NOT_FOUND
+
 
 
 class BaseAPIException(HTTPException):
     """
-    ## _summary_
+    ## Базовое исключение для API.
 
-    Args:
-        HTTPException (_type_): _description_
+    Используется для создания пользовательских исключений с заданным статусом и описанием.
+
+    ### Inherits:
+        HTTPException: Исключение FastAPI для HTTP-ответов.
     """    
     def __init__(self, status_code: int, detail: str):
         """
-        ## _summary_
+        ## Инициализация базового исключения.
 
-        Args:
-            status_code (int): _description_
-            detail (str): _description_
+        ### Args:
+            status_code (int): HTTP-статус код.
+            detail (str): Описание ошибки.
         """        
         super().__init__(status_code=status_code, detail=detail)
 
 
 class NotFoundException(BaseAPIException):
     """
-    ## _summary_
+    ## Исключение: Ресурс не найден.
 
-    Args:
-        BaseAPIException (_type_): _description_
+    Используется для случаев, когда запрашиваемый ресурс отсутствует.
+
+    ### Inherits:
+        BaseAPIException: Базовое исключение для API.
     """    
     def __init__(self, resource_name: str):
         """
-        ## _summary_
+        ## Инициализация исключения.
 
-        Args:
-            resource_name (str): _description_
+        Формирует сообщение об ошибке с указанием имени ресурса.
+
+        ### Args:
+            resource_name (str): Название ресурса.
         """        
         detail = f"{resource_name} не найден."
         super().__init__(status_code=NOT_FOUND, detail=detail)

@@ -1,3 +1,5 @@
+"""Маршруты CRUD для работы с ресурсом пользователя."""
+
 from typing import Annotated
 
 from fastapi import APIRouter, Depends
@@ -5,7 +7,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.dao.user import UserDAO
 from app.api.exceptions.user import UserNotFoundException
-from app.schemas.user import NewUser, ExistsUser
+
+from app.api.v1.models.request import CreateUserRequestModel
+from app.api.v1.models.response import UserResponseModel
 
 from app.api.dependencies.dao import get_user_dao
 from app.api.dependencies.db import get_db_session
@@ -16,68 +20,76 @@ router = APIRouter(prefix='/users', tags=['users', 'Пользователи', '
 
 
 
-@router.post('/', response_model=ExistsUser)
+@router.post('/', response_model=UserResponseModel)
 async def create_user(
-    user: NewUser,
+    user: CreateUserRequestModel,
     user_dao: Annotated[UserDAO, Depends(get_user_dao)],
     session: Annotated[AsyncSession, Depends(get_db_session)]
 ):
     """
-    ## Ендпоинт создания нового пользователя
+    ## Эндпоинт создания нового пользователя.
 
-    Args:
-        user (NewUser): _description_
-        user_dao (Annotated[UserDAO, Depends): _description_
-        session (Annotated[AsyncSession, Depends): _description_
+    Создает запись в БД на основе валидированной схемы `NewUser` и возвращает
+    представление созданного пользователя.
 
-    Returns:
-        _type_: _description_
-    """    
+    ### Args:
+        user (CreateUserRequestModel): Данные для создания пользователя.
+        user_dao (UserDAO): Объект доступа к данным пользователя.
+        session (AsyncSession): Асинхронная сессия SQLAlchemy для транзакции.
+
+    ### Returns:
+        UserResponseModel: Созданный пользователь с идентификатором.
+    """
     async with session.begin():
         res = await user_dao.create(user, session)
     return res
 
 
-@router.get('/', response_model=list[ExistsUser])
+@router.get('/', response_model=list[UserResponseModel])
 async def get_all(
     user_dao: Annotated[UserDAO, Depends(get_user_dao)],
     session: Annotated[AsyncSession, Depends(get_db_session)]
 ):
     """
-    ## Ендпоинт получения всех пользователей.
+    ## Эндпоинт получения списка пользователей.
 
-    Args:
-        user_dao (Annotated[UserDAO, Depends): _description_
-        session (Annotated[AsyncSession, Depends): _description_
+    Возвращает все записи пользователей из базы данных.
 
-    Returns:
-        _type_: _description_
-    """    
+    ### Args:
+        user_dao (UserDAO): Объект доступа к данным пользователя.
+        session (AsyncSession): Асинхронная сессия SQLAlchemy для транзакции.
+
+    ### Returns:
+        list[UserResponseModel]: Коллекция пользователей.
+    """
     async with session.begin():
         res = await user_dao.get_all(session)
     return res
 
 
-@router.get('/{user_id}', response_model=ExistsUser)
+@router.get('/{user_id}', response_model=UserResponseModel)
 async def get_by_id(
     user_id: int,
     user_dao: Annotated[UserDAO, Depends(get_user_dao)],
     session: Annotated[AsyncSession, Depends(get_db_session)]
 ):
     """
-    ## Ендпоинт получения пользователя по идентификатору.
+    ## Эндпоинт получения пользователя по идентификатору.
 
-    Args:
-        user_id (int): _description_
-        user_dao (Annotated[UserDAO, Depends): _description_
-        session (Annotated[AsyncSession, Depends): _description_
+    Возвращает пользователя по его `id` или выбрасывает исключение,
+    если запись не найдена.
 
-    Raises:
-        UserNotFoundException: _description_
+    ### Args:
+        user_id (int): Идентификатор искомого пользователя.
+        user_dao (UserDAO): Объект доступа к данным пользователя.
+        session (AsyncSession): Асинхронная сессия SQLAlchemy для транзакции.
 
-    Returns:
-        _type_: _description_
-    """    
+    ### Raises:
+        UserNotFoundException: Пользователь с указанным `id` не найден.
+
+    ### Returns:
+        UserResponseModel: Найденный пользователь.
+    """
     async with session.begin():
         res = await user_dao.get_by_id(user_id, session)
     if not res:

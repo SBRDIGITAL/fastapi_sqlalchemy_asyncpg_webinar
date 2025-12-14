@@ -1,21 +1,25 @@
+"""Исключения, связанные с ресурсом пользователя."""
+
 from .base import NotFoundException
 
 
 class UserNotFoundException(NotFoundException):
     """
-    ## _summary_
+    ## Исключение: Пользователь не найден.
 
-    Args:
-        NotFoundException (_type_): _description_
-    """    
+    Выбрасывается, если пользователь с указанным идентификатором не найден в базе данных.
+
+    ### Inherits:
+        NotFoundException: Базовое исключение для ресурса, который не найден.
+    """
     def __init__(self, user_id: int):
         """
-        ## _summary_
+        ## Инициализация исключения.
 
-        `НЕ ДОПОЛНЯТЬ "не найден"`!
+        Формирует сообщение об ошибке с указанием идентификатора пользователя.
 
-        Args:
-            user_id (int): _description_
-        """        
+        ### Args:
+            user_id (int): Идентификатор пользователя.
+        """
         detail = f"Пользователь с идентификатором {user_id}."
         super().__init__(resource_name=detail)
